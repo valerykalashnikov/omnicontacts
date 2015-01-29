@@ -19,9 +19,13 @@ module OmniContacts
         @self_host = "www.linkedin.com"
         @profile_path = "/oauth2/v1/userinfo"
         @state = (args[3] && args[3][:state])
+        @save_access_token = (args[3] && args[3][:save_access_token])
       end
 
       def fetch_contacts_using_access_token access_token, token_type
+        if @save_access_token.present?
+          session[:linkedin_access_token] = access_token
+        end
         token_type = "Bearer" if token_type.nil?
         contacts_response = https_get(@contacts_host, @contacts_path, contacts_req_params, contacts_req_headers(access_token, token_type))
         contacts_from_response contacts_response
